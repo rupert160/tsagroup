@@ -1,0 +1,28 @@
+Hello Louiza and Laurie,
+
+Please see attached the coding assignment for the interview on the 19th of July 2024
+
+Pre requisites:
+A linux CLI environment with `podman`, `podman-compose` and `curl`
+
+Running project:
+execute ./doit.sh
+
+to pull the image down from ECR (public) rather than build it locally you can simply
+remove the build stanza in the docker-compose.yml file to approach this file:
+
+```
+version: 3.7
+
+services:
+    gin:
+        image: public.ecr.aws/w5v4j9k4/tsagroup_rupertbailey:latest
+        container_name: gin
+        restart: always
+        ports:
+            - "3004:3004"
+```
+
+then `podman-compose up --detach` will look to ecr-public for the image rather than building it.
+Unfortunately there is no other way to override this behavior with a cli flag.
+nor can you select another file to run podman-compose against.

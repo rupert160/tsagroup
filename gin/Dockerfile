@@ -1,4 +1,4 @@
-FROM golang:alpine
+FROM golang:alpine AS public.ecr.aws/w5v4j9k4/tsagroup_rupertbailey
 
 MAINTAINER Maintainer
 

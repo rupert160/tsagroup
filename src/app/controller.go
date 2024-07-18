@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"fmt"
 )
 
 func initiateRoutes() *gin.Engine {
@@ -14,6 +15,17 @@ func initiateRoutes() *gin.Engine {
 		context.HTML(http.StatusAccepted, "index.html", nil)
 	})
 
-	return route
+	route.GET("/contacts", func(context *gin.Context) {
+		context.IndentedJSON(http.StatusOK, contacts)
+	})
 
+	route.POST("/contacts", func(context *gin.Context){
+		var newContact contact
+		if err := context.BindJSON(&newContact); err != nil {
+			fmt.Printf("%s", err)
+		}
+		contacts = append(contacts, newContact)
+		reformat_initial_data()
+	})
+	return route
 }

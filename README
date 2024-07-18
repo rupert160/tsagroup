@@ -2,6 +2,11 @@ Hello Louiza and Laurie,
 
 Please see attached the coding assignment for the interview on the 19th of July 2024
 
+I have used the following projects as sources for my project:
+* https://github.com/zeedt/go-docker-dev.to //for initial setup of the project
+* https://github.com/dongri/phonenumber //for AU phone parsing for e164 formats
+
+
 Pre requisites:
 A linux CLI environment with `podman`, `podman-compose` and `curl`
 

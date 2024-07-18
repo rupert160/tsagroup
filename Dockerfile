@@ -16,9 +16,9 @@ COPY templates /go/src/go-docker-dev.to/templates
 #RUN apk update && apk add --no-cache git
 #RUN go get ./...
 
-COPY dependencies /go/src
-
-
+#COPY dependencies /go/src
+RUN go mod init
+RUN go get github.com/gin-gonic/gin
 RUN go build go-docker-dev.to/src/app
 
 EXPOSE $PORT

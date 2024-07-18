@@ -1,10 +1,24 @@
-i#!/usr/bin/env bash
+#!/usr/bin/env bash
 
-podman stop gin
+function run_curl(){
+	curl -k -X GET localhost:3004/contacts
+	curl -k -X POST localhost:3004/contacts \
+		--data '{"Full_Name": "Rupert Bailey","Email": "rupert@coolguy.net.au","Phone_Numbers": ["0477 111 222"]}' 
+	curl -k -X GET localhost:3004/contacts
+}
 
-podman build -t go-docker-dev.to-gin . && \
-podman run --rm --detach --name gin --publish 3004:3004 go-docker-dev.to-gin
+function publish(){
+	aws configure sso --profile AdministratorAccess-629729073564
+	aws ecr-public get-login-password --region us-east-1 --profile AdministratorAccess-629729073564 | \
+		docker login --username AWS --password-stdin public.ecr.aws/w5v4j9k4
+	
+	podman build -t go-docker-dev.to-gin
+	podman tag go-docker-dev.to-gin:latest  public.ecr.aws/w5v4j9k4/tsagroup_rupertbailey:latest
+	podman push public.ecr.aws/w5v4j9k4/tsagroup_rupertbailey:latest
+	podman rmi public.ecr.aws/w5v4j9k4/tsagroup_rupertbailey
+}
 
-curl -k -X GET localhost:3004/contacts
-curl -k -X POST --data '{"Full_Name": "Rupert Bailey","Email": "rupert@coolguy.net.au","Phone_Numbers": ["0477 111 222"]}' localhost:3004/contacts
-curl -k -X GET localhost:3004/contacts
+podman-compose down
+podman-compose up -d
+run_curl
+podman-compose down

@@ -1,0 +1,9 @@
+version: 3.7
+
+services:
+    gin:
+        image: public.ecr.aws/w5v4j9k4/tsagroup_rupertbailey:latest
+        container_name: gin
+        restart: always
+        ports:
+            - "3004:3004"

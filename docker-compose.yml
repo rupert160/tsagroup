@@ -14,3 +14,27 @@ services:
         restart: always
         ports:
             - "3004:3004"
+        depends_on: 
+          postgres:
+            condition: service_healthy
+
+
+    postgres:
+        image: docker.io/library/postgres:latest
+        container_name: postgres
+        environment:
+          POSTGRES_PASSWORD: mypass
+          POSTGRES_HOST_AUTH_METHOD: trust
+          APP_DB_USER: tsauser
+          APP_DB_PASS: tsapass
+          APP_DB_NAME: tsagroup
+        volumes:
+          - ./pg_init:/docker-entrypoint-initdb.d:Z
+          #- ./pg_data:/var/lib/postgresql/data:Z
+        ports:
+          - '5432:5432'
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U tsauser -d tsagroup "]
+          interval: 5s
+          timeout: 5s
+          retries: 5

@@ -12,8 +12,7 @@ function publish(){
 	aws ecr-public get-login-password --region us-east-1 --profile AdministratorAccess-629729073564 | \
 		docker login --username AWS --password-stdin public.ecr.aws/w5v4j9k4
 	
-	podman build -t go-docker-dev.to-gin
-	podman tag go-docker-dev.to-gin:latest  public.ecr.aws/w5v4j9k4/tsagroup_rupertbailey:latest
+	podman-compose build
 	podman push public.ecr.aws/w5v4j9k4/tsagroup_rupertbailey:latest
 	podman rmi public.ecr.aws/w5v4j9k4/tsagroup_rupertbailey
 }
@@ -21,4 +20,4 @@ function publish(){
 podman-compose down
 podman-compose up -d
 run_curl
-podman-compose down
+#podman-compose down

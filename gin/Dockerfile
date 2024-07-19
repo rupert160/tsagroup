@@ -18,6 +18,7 @@ WORKDIR /go/src/go-docker-dev.to
 RUN go mod init
 RUN go get github.com/gin-gonic/gin
 RUN go get github.com/dongri/phonenumber@latest
+RUN go get github.com/go-pg/pg/v10
 
 COPY src /go/src/go-docker-dev.to/src
 COPY templates /go/src/go-docker-dev.to/templates

@@ -18,6 +18,6 @@ function publish(){
 }
 
 podman-compose down
-podman-compose up -d
-run_curl
-#podman-compose down
+podman-compose build gin
+podman-compose up
+#run_curl

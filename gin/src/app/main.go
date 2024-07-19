@@ -22,11 +22,12 @@ var contacts_string = []contact_string{
 	{Full_Name: "radia perlman", Email: "rperl001@mit.edu", Phone_Numbers: []string{"(03) 9333 7119", "0488445688", "+61488224568"}},
 }
 
-//type contact struct {
-//	Full_Name string `json:"full_name"`
-//	Email string `json:"title"`
-//        Phone_Numbers []int `json:"phone_numbers"`
-//}
+type contact struct {
+	Full_Name string `json:"full_name"`
+	Email string `json:"title"`
+        Phone_Numbers []int64 `json:"phone_numbers"`
+}
+
 type Contact struct {
     Id     int64
     Name   string
@@ -38,18 +39,19 @@ func (u Contact) String() string {
     return fmt.Sprintf("User<%d %s %v>", u.Id, u.Name, u.Email, u.Phone_Numbers)
 }
 
-//var contacts []Contact
+var contacts []contact
+var Contacts []Contact
 
-func convert_stoi(s string) int {
+func convert_stoi(s string) int64 {
 	if s == "" {return 0}
 	i, err := strconv.Atoi(s)
 	if err != nil {
         	panic(err)
     	}
-	return i
+	return int64(i)
 }
 
-func e164(token string) int{
+func e164(token string) int64{
         matched2, err2 := regexp.MatchString(`\+.*`, token)
         matched3, err3 := regexp.MatchString(`\+(61).*`, token)
         if matched2 && !matched3 { return 0 } 
@@ -73,24 +75,33 @@ func e164(token string) int{
 
 }
 
-//func convert_contact(cs contact_string) Contact {
-//        var numbers []int
-//        //for _,
-//        //number_string := range cs.Phone_Numbers{
-//        //        numbers = append(numbers, e164(number_string))//todo
-//        //}
-//        return Contact{cs.Full_Name, cs.Email, numbers} //todo
-//}
-//
-//func reformat_initial_data(){
-//        //var new_contacts []Contact //todo
-//        //for _,
-//        //cs := range contacts_string {
-//        //        new_contacts = append(new_contacts, convert_contact(cs))//todo
-//        //}
-//        //contacts = new_contacts //todo
-//	contacts_string = nil
-//}
+func convert_contact(cs contact_string) contact {
+        var numbers []int64
+        for _,
+        number_string := range cs.Phone_Numbers{
+                numbers = append(numbers, e164(number_string))//todo
+        }
+        return contact{cs.Full_Name, cs.Email, numbers} //todo
+}
+
+func reformat_initial_data(db *pg.DB){
+        var new_contacts []contact //todo
+        for _,
+        cs := range contacts_string {
+		c := convert_contact(cs)
+                new_contacts = append(new_contacts, c)
+		_, err := db.Model(&Contact{
+    		    Name:  c.Full_Name,
+    		    Email: c.Email,
+    		    Phone_Numbers: c.Phone_Numbers,
+    		}).Insert()
+    		if err != nil {
+    		    panic(err)
+    		}
+        }
+        contacts = new_contacts //todo
+	contacts_string = nil
+}
 
 func createSchema(db *pg.DB) error {
     models := []interface{}{
@@ -98,11 +109,19 @@ func createSchema(db *pg.DB) error {
     }
 
     for _, model := range models {
-        err := db.Model(model).CreateTable(&orm.CreateTableOptions{
-            Temp: false,
-        })
-        if err != nil {
-            return err
+	//todo risk of infinite loop
+	counter := 0
+        for {
+            err := db.Model(model).CreateTable(&orm.CreateTableOptions{ Temp: false })
+            if err != nil {
+                time.Sleep(5 * time.Second)
+                // Retry the operation
+		counter++
+		if counter >5 {return err}
+                continue
+            }
+            // If no error, break the loop
+            break
         }
     }
     return nil
@@ -110,10 +129,13 @@ func createSchema(db *pg.DB) error {
 
 func Model() {
     db := pg.Connect(&pg.Options{
-        User: "tsauser",
-        Password: "tsapass",
+	// todo need to fix wait for active db bug
+	//User: "tsauser",
+        //Password: "tsapass",
+        User: "postgres",
+        Password: "mypass",
         Addr: "postgres:5432",
-        Database: "tsagroup",
+        Database: "postgres",
     })
     defer db.Close()
 
@@ -122,31 +144,32 @@ func Model() {
         panic(err)
     }
 
-    user1 := &Contact{
-        Name:   "Rupert Bailey",
-        Email: "admin1@admin.com",
-        Phone_Numbers: []int64{611800111222, 61470436111},
-    }
-    _, err = db.Model(user1).Insert()
-    if err != nil {
-        panic(err)
-    }
+    //user1 := &Contact{
+    //    Name:   "Rupert Bailey",
+    //    Email: "admin1@admin.com",
+    //    Phone_Numbers: []int64{611800111222, 61470436111},
+    //}
+    //_, err = db.Model(user1).Insert()
+    //if err != nil {
+    //    panic(err)
+    //}
 
-    _, err = db.Model(&Contact{
-        Name:   "Bob Bailey",
-        Email: "bob@admin.com",
-        Phone_Numbers: []int64{611800111333, 61470436222},
-    }).Insert()
-    if err != nil {
-        panic(err)
-    }
+    //_, err = db.Model(&Contact{
+    //    Name:   "Bob Bailey",
+    //    Email: "bob@admin.com",
+    //    Phone_Numbers: []int64{611800111333, 61470436222},
+    //}).Insert()
+    //if err != nil {
+    //    panic(err)
+    //}
+    reformat_initial_data(db)
 
-    // Select user by primary key.
-    user := &Contact{Id: user1.Id}
-    err = db.Model(user).WherePK().Select()
-    if err != nil {
-        panic(err)
-    }
+    //// Select user by primary key.
+    //user := &Contact{Id: user1.Id}
+    //err = db.Model(user).WherePK().Select()
+    //if err != nil {
+    //    panic(err)
+    //}
 
     // Select all users.
     var users []Contact
@@ -155,7 +178,7 @@ func Model() {
         panic(err)
     }
 
-    fmt.Println(user)
+    //fmt.Println(user)
     fmt.Println(users)
     // Output: Contact<1 admin [admin1@admin admin2@admin]>
     // [Contact<1 admin [admin1@admin admin2@admin]> Contact<2 root [root1@root root2@root]>]
@@ -163,7 +186,6 @@ func Model() {
 
 func main() {
 	route := initiateRoutes();
-	time.Sleep(15 * time.Second)
 	Model()
 	route.Run(":3004")
 }

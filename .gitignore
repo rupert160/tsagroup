@@ -1,3 +1,4 @@
+db.go
 go.mod
 go.sum
 my.go

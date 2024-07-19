@@ -110,8 +110,8 @@ func createSchema(db *pg.DB) error {
 
 func Model() {
     db := pg.Connect(&pg.Options{
-        User: "postgres", //todo
-        Password: "mypass", //todo
+        User: "tsauser",
+        Password: "tsapass",
         Addr: "postgres:5432",
         Database: "tsagroup",
     })

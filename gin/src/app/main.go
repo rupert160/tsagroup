@@ -129,59 +129,21 @@ func createSchema(db *pg.DB) error {
 
 func Model() {
     db := pg.Connect(&pg.Options{
+        //User: "postgres",
+        //Password: "mypass",
+        //Database: "postgres",
 	// todo need to fix wait for active db bug
-	//User: "tsauser",
-        //Password: "tsapass",
-        User: "postgres",
-        Password: "mypass",
+	User: "tsauser",
+        Password: "tsapass",
+        Database: "tsagroup",
         Addr: "postgres:5432",
-        Database: "postgres",
     })
-    defer db.Close()
 
     err := createSchema(db)
-    if err != nil {
-        panic(err)
-    }
+    if err != nil { panic(err) }
 
-    //user1 := &Contact{
-    //    Name:   "Rupert Bailey",
-    //    Email: "admin1@admin.com",
-    //    Phone_Numbers: []int64{611800111222, 61470436111},
-    //}
-    //_, err = db.Model(user1).Insert()
-    //if err != nil {
-    //    panic(err)
-    //}
-
-    //_, err = db.Model(&Contact{
-    //    Name:   "Bob Bailey",
-    //    Email: "bob@admin.com",
-    //    Phone_Numbers: []int64{611800111333, 61470436222},
-    //}).Insert()
-    //if err != nil {
-    //    panic(err)
-    //}
     reformat_initial_data(db)
-
-    //// Select user by primary key.
-    //user := &Contact{Id: user1.Id}
-    //err = db.Model(user).WherePK().Select()
-    //if err != nil {
-    //    panic(err)
-    //}
-
-    // Select all users.
-    var users []Contact
-    err = db.Model(&users).Select()
-    if err != nil {
-        panic(err)
-    }
-
-    //fmt.Println(user)
-    fmt.Println(users)
-    // Output: Contact<1 admin [admin1@admin admin2@admin]>
-    // [Contact<1 admin [admin1@admin admin2@admin]> Contact<2 root [root1@root root2@root]>]
+    db.Close()
 }
 
 func main() {

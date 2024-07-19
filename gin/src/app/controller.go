@@ -18,13 +18,11 @@ func initiateRoutes() *gin.Engine {
 
 	route.GET("/contacts", func(context *gin.Context) {
 		db := pg.Connect(&pg.Options{
-        		// todo need to fix wait for active db bug
-        		//User: "tsauser",
-        		//Password: "tsapass",
-        		User: "postgres",
-        		Password: "mypass",
-        		Addr: "postgres:5432",
-        		Database: "postgres",
+			User: "tsauser",
+       			Password: "tsapass",
+       			Database: "tsagroup",
+       			Addr: "postgres:5432",
+
     		})
 		// Select all users.
 		var users []Contact
@@ -44,13 +42,10 @@ func initiateRoutes() *gin.Engine {
 		c := convert_contact(newContact)
 		contacts = append(contacts, c) //todo
 		db := pg.Connect(&pg.Options{
-        		// todo need to fix wait for active db bug
-        		//User: "tsauser",
-        		//Password: "tsapass",
-        		User: "postgres",
-        		Password: "mypass",
-        		Addr: "postgres:5432",
-        		Database: "postgres",
+			User: "tsauser",
+       			Password: "tsapass",
+       			Database: "tsagroup",
+       			Addr: "postgres:5432",
     		})
 
                 _, err := db.Model(&Contact{

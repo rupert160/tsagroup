@@ -5,16 +5,20 @@ Please see attached the coding assignment for the interview on the 19th of July 
 I have used the following projects as sources for my project:
 * https://github.com/zeedt/go-docker-dev.to //for initial setup of the project
 * https://github.com/dongri/phonenumber //for AU phone parsing for e164 formats
-
+* https://github.com/go-pg/pg/v10 //Object Relational Mapping library for go
 
 Pre requisites:
-A linux CLI environment with `podman`, `podman-compose` and `curl`
+A linux CLI environment with `podman`, `podman-compose` and `curl` and active internet
 
-Running project:
-execute ./doit.sh
+Running project: bash ./doit.sh
 
-to pull the image down from ECR (public) rather than build it locally you can simply
-remove the build stanza in the docker-compose.yml file to approach this file:
+podman-compose up -d #This will download and run the containers in the background: 
+sleep 20 #you should wait a few seconds before using the API, I added 20 seconds
+run_curl #this runs api commands
+podman-compose down #this tears down the containers
+
+this will to pull the image down from ECR (public) rather than build it locally you.
+Otherwise you may build locally uncommenting the build stanza in the docker-compose.yml
 
 ```
 version: 3.7
@@ -27,7 +31,3 @@ services:
         ports:
             - "3004:3004"
 ```
-
-then `podman-compose up --detach` will look to ecr-public for the image rather than building it.
-Unfortunately there is no other way to override this behavior with a cli flag.
-nor can you select another file to run podman-compose against.

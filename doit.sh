@@ -17,7 +17,7 @@ function publish(){
 	podman rmi public.ecr.aws/w5v4j9k4/tsagroup_rupertbailey
 }
 
+podman-compose up -d
+sleep 20
+run_curl
 podman-compose down
-podman-compose build gin
-podman-compose up
-#run_curl

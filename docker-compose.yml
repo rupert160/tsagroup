@@ -2,12 +2,13 @@ version: 3.7
 
 services:
     gin:
-        build:
         #If the image does not exist, Compose attempts to pull it, unless you have also specified build,
         #in which case it builds it using the specified options and tags it with the specified tag.
         #https://docs.docker.com/compose/compose-file/compose-file-v3/
-            context: ./gin
-            dockerfile: Dockerfile
+        
+        #build:
+        #    context: ./gin
+        #    dockerfile: Dockerfile
 
         image: public.ecr.aws/w5v4j9k4/tsagroup_rupertbailey:latest
         container_name: gin
